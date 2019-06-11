@@ -1,0 +1,22 @@
+AppBundle\Entity\Voucher:
+    type: entity
+    table: voucher
+    repositoryClass: AppBundle\Repository\VoucherRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        date:
+            type: date
+            nullable: true
+        documentNo:
+            type: string
+            nullable: true
+    oneToMany:
+        items:
+            targetEntity: AppBundle\Entity\VoucherItem
+            mappedBy: voucher
+            cascade: ["persist", "remove"]

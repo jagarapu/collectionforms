@@ -1,0 +1,27 @@
+{% macro voucherItemAllocation_prototype(vocherItemAllocation) %}
+    <td>
+        <div style="font-size: 10px;">
+            {{ form_widget(vocherItemAllocation.baseAmount) }}
+            {{ form_widget(vocherItemAllocation.operation) }}
+            {{ form_widget(vocherItemAllocation.linkedVoucherItem) }}
+        </div>
+    </td>
+    <td>
+        <div style="min-width: 70px;font-size: 10px;">
+            <div class="input-group allocation_credit_currency">
+                {{ form_widget(vocherItemAllocation.creditAmount) }}
+            </div>
+        </div>
+    </td>
+    <td>
+        <div>
+            <div class="input-group allocation_debit_currency">
+                {{ form_widget(vocherItemAllocation.debitAmount) }}
+            </div>
+        </div>
+    </td>
+    {#</td>#}
+    <td>
+        <span class="btn btn-xs red delete_voucher_item_allocation_action"><i class="fa fa-times"></i></span>
+    </td>
+{% endmacro %}

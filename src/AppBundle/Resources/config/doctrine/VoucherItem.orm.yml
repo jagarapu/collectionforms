@@ -1,0 +1,29 @@
+AppBundle\Entity\VoucherItem:
+    type: entity
+    table: voucher_item
+    repositoryClass: AppBundle\Repository\VoucherItemRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: text
+            nullable: true
+        amount:
+            type: float
+            nullable: true
+        exchangeRate:
+            type: float
+            nullable: true
+        itemOrder:
+            type: integer
+            nullable: true
+    manyToOne:
+        voucher:
+            targetEntity: AppBundle\Entity\Voucher
+            inversedBy: items
+            cascade: ["persist"]
+

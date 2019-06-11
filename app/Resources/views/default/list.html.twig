@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block body %}
+    <a href="{{ path('homepage') }}" class="btn btn-circle red-sunglo btn-sm"><i
+                class="fa fa-plus"></i> Add New User </a>
+    <table class="table table-hover table-light">
+        <thead>
+        <tr>
+            <th>
+                User
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for user in objects %}
+            <tr>
+                <td>
+                    {{ user.fullname }}
+                </td>
+                <td>
+                    <a href="{{ path('edit_user', {'id': user.id}) }}" class="btn btn-xs green"><i
+                                class="fa fa-edit"></i> Edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="100">No Users</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}

@@ -1,0 +1,248 @@
+{% extends 'base.html.twig' %}
+
+{% import 'default/macroVoucher.html.twig' as macroVoucher %}
+
+
+{% form_theme form _self %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .page-sidebar-closed .page-content-wrapper .page-content, .page-content-wrapper .page-content{
+            margin-left: 0px !important;
+        }
+    </style>
+{% endblock %}
+
+
+{% block header %}
+    New Voucher
+{% endblock %}
+
+{% block body %}
+    <div class="portlet light" id="div-vouchers-panel">
+        <div class="portlet-title">
+            <div class="actions btn-set">
+                 <button type="button" class="btn green btn_topSave btn_form_submission"> Save & Add</button>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <!-- BEGIN FORM-->
+            <form action="#" class="form-horizontal vouchers_form focus_style" novalidate="novalidate" method="POST">
+                <div class="vouchers_list"
+                     data-prototype="{{ macroVoucher.voucher_prototype(form.vouchers.vars.prototype)|e }}"
+                     data-index="{{ form.vouchers|length }}">
+                    {% for voucher in form.vouchers %}
+                        {{ macroVoucher.voucher_prototype(voucher) }}
+                    {% endfor %}
+                </div>
+                <div class="form-actions nobg right">
+
+                    <a href="#" class="btn btn-sm btn-default blue add_tag_link">Add Voucher</a>
+                    {{ form_widget(form.saveAndAdd) }}
+                </div>
+                {{ form_row(form._token) }}
+            </form>
+            <!-- END FORM-->
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        // setup an "add a tag" link
+        var $newVoucher = true;
+        var $activeVoucherPanel = false;
+        var $prevVal = null;
+
+        jQuery(document).ready(function () {
+            // Get the ul that holds the collection of tags
+            var $collectionHolder = $('div.vouchers_list');
+
+            // count the current form inputs we have (e.g. 2), use that as the new
+            // index when inserting a new item (e.g. 2)
+            $collectionHolder.data('index', $collectionHolder.find(':input').length);
+
+            $('.add_tag_link').on('click', function (e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+
+                // add a new tag form (see code block below)
+                addTagForm($collectionHolder, $(this));
+            });
+
+            removeVoucherLinks();
+
+
+        });
+
+        function addTagForm($collectionHolder, $newLinkLi) {
+            // Get the data-prototype explained earlier
+            var prototype = $collectionHolder.data('prototype');
+
+            // get the new index
+            var index = $collectionHolder.data('index');
+            index = index + 1;
+            // Replace '$$name$$' in the prototype's HTML to
+            // instead be a number based on how many items we have
+            var newForm = prototype.replace(/__name__/g, index);
+
+            // increase the index with one for the next item
+            $collectionHolder.data('index', index);
+
+            // Display the form in the page in an li, before the "Add a tag" link li
+            var $newFormLi = $('<div></div>').append(newForm);
+
+            // also add a remove button, just for this example
+            $newLinkLi.closest('.form-actions').before($newFormLi);
+            $activeVoucherPanel = $newFormLi.find('.voucher_line');
+            $activeVoucherPanel.data('index', $activeVoucherPanel.find(':input').length);
+
+            $newVoucher = true;
+            $newFormLi.find('#link_add_debit_item').trigger('click');
+            removeVoucherLinks();
+            updateSubmissionButtonStatus();
+            $activeVoucherPanel.find('.text_vdate').focus();
+        }
+        function removeVoucherLinks() {
+            $('.remove-tag').click(function (e) {
+                e.preventDefault();
+                $(this).closest('.voucher_line').remove();
+                updateSubmissionButtonStatus();
+                return false;
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        //******** GLOBAL parameters
+
+        var $debitItemsCollectionHolder;
+        var $debitItemNewLinkLi = $('<li style="list-style: none;"></li>');
+        var $countVouchersItem = 0;
+
+        jQuery(document).ready(function () {
+
+            $(document).find('.voucher_line').each(function () {
+                $activeVoucherPanel = $(this);
+            });
+            updateSubmissionButtonStatus();
+
+
+            // Get the ul that holds the collection of tags
+            $debitItemsCollectionHolder = $($activeVoucherPanel).find('.debit_lines');
+
+            // add the "add a tag" anchor and li to the tags ul
+            $debitItemsCollectionHolder.prepend($debitItemNewLinkLi);
+
+            // count the current form inputs we have (e.g. 2), use that as the new
+            // index when inserting a new item (e.g. 2)
+            $debitItemsCollectionHolder.data('index', $debitItemsCollectionHolder.find(':input').length);
+
+            $(document).on('click', '#link_add_debit_item', function (e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+                // add a new tag form (see next code block)
+                $activeVoucherPanel = $(this).closest('.voucher_line');
+                $debitItemsCollectionHolder = $activeVoucherPanel;
+                $($activeVoucherPanel).find('.debit_lines').prepend($debitItemNewLinkLi);
+
+                addDebitItemForm($activeVoucherPanel, $debitItemNewLinkLi);
+
+            });
+
+            $(document).on('focus', '.div_voucher_account .select2-container', function (e) {
+                $prevVal = $(this).closest('.div_voucher_account').find('.select_account').val();
+            });
+
+
+            $(".vouchers_form").submit(function (event) {
+                $('.alert-danger').remove();
+                return true;
+            });
+        });
+
+
+        //
+        //        ADD LINK
+        //
+        function addDebitItemForm($debitItemsCollectionHolder, $debitItemNewLinkLi) {
+            // Get the data-prototype explained earlier
+            var prototype = $activeVoucherPanel.find('.debit_lines').data('prototype');
+            // get the new index
+            var index = $activeVoucherPanel.find('.debit_lines').data('index');
+            index = index + 1;
+            // Replace '__vitem__' in the prototype's HTML to
+            // instead be a number based on how many items we have
+            var newForm = prototype.replace(/__vitem__/g, index);
+
+            // increase the index with one for the next item
+            $activeVoucherPanel.find('.debit_lines').data('index', index);
+
+            var $newFormLi = $('<tr class="debit_line item_line"></tr>').prepend(newForm);
+            $activeVoucherPanel.find('.debit_lines').append($newFormLi);
+
+            // set new voucher item order START
+            var maxItemOrder = 0;
+            $activeVoucherPanel.find('.debit_line').each(function () {
+                var itemOrder = parseInt($(this).find('.text_item_order').val());
+                if (itemOrder > maxItemOrder) {
+                    maxItemOrder = itemOrder;
+                }
+            });
+            maxItemOrder = maxItemOrder + 1;
+            $newFormLi.find('.text_item_order').val(maxItemOrder);
+            // set new voucher item order END
+
+            var $prevLine = $newFormLi.prev(".item_line");
+
+            // setting the item type debit or credit
+            var numberOfItems = $activeVoucherPanel.find('.item_line').length;
+
+
+            if ($newVoucher) {
+                $newVoucher = false;
+                $activeVoucherPanel.find('.text_vdate').focus();
+            } else {
+                $newFormLi.find('.select_cost_center').focus();
+            }
+            $(window).scrollTop($newFormLi.offset().top - 200);
+
+            updateTabIndex();
+        }
+
+        $(document).on('click', '.delete_voucher_item_action .btn', function (e) {
+            $activeVoucherPanel = $(this).closest('.voucher_line');
+            var line = $(this).closest('tr');
+            line.remove();
+        });
+
+        $(document).on('click', '.btn_topSave', function (e) {
+            $(".btn_formSave").trigger("click");
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        function updateSubmissionButtonStatus() {
+            $countVouchersItem = 0;
+            $(document).find('.item_line').each(function () {
+                $countVouchersItem++;
+            });
+            if ($countVouchersItem > 0) {
+                $('.btn_form_submission').prop('disabled', '');
+            } else {
+                $('.btn_form_submission').prop('disabled', 'disabled');
+            }
+        }
+
+        function updateTabIndex() {
+            $('body').find('select.not_focusable').each(function () {
+                $(this).attr("tabIndex", "-1");
+            });
+        }
+    </script>
+
+{% endblock %}

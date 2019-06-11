@@ -1,0 +1,14 @@
+AppBundle\Entity\Voucher:
+  properties:
+    date:
+      - NotBlank: { message: "Date should not be empty", groups: [ newVoucher ] }
+
+AppBundle\Entity\VoucherItem:
+  properties:
+    name:
+      - NotBlank: { message: "Name should not be empty", groups: [ newVoucher, newVoucherItem ] }
+    amount:
+      - NotBlank: { message: "Amount should not be empty", groups: [ newVoucher, newVoucherItem ] }
+      - GreaterThan: 0
+    exchangeRate:
+      - NotBlank: { message: "Exchange Rate should not be empty", groups: [ newVoucher, newVoucherItem ] }

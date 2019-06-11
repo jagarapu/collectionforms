@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+{% endblock %}
+
+{% block body %}
+    <a href="{{ path('new_voucher_entry') }}">
+        New Voucher
+    </a>
+    <ul>
+    {% for type in voucherTypes %}
+        <li>
+            <a href="{{ path('edit_voucher_entry', {'id': type.id  }) }}">
+                {{ type.documentNo }}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+{% endblock %}

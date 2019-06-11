@@ -1,0 +1,35 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+
+/**
+ * VoucherCollection
+ */
+class VoucherCollection
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var Voucher[]|ArrayCollection
+     */
+    private $vouchers;
+
+    public function __construct(){
+        $this->vouchers = new ArrayCollection();
+    }
+
+
+
+}
+
+
+
+
+
+
+

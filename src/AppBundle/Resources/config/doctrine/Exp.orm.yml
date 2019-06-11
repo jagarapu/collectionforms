@@ -1,0 +1,28 @@
+AppBundle\Entity\Exp:
+    type: entity
+    table: exp
+    repositoryClass: AppBundle\Repository\ExpRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        title:
+            type: string
+            length: 255
+        location:
+            type: string
+            length: 255
+        dateFrom:
+            type: datetime
+        dateTo:
+            type: datetime
+    manyToOne:
+        user:
+            targetEntity: User
+            inversedBy: exp
+            joinColumn:
+                name: user_id
+                referencedColumnName: id

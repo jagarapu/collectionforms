@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    {{ form_start(form, {'method': 'post', 'action': path('edit_user', {'id': id }), 'attr': {'class': 'edit_user','novalidate': 'novalidate'}}) }}
+    {{ form_row(form.fullname) }}
+    <div class="col-sm-8 col-sm-offset-2" id="exp_list" data-prototype="{{ form_widget(form.exp.vars.prototype)|e('html_attr') }}">
+        {% for row in form.exp %}
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <strong>{{ row.vars.value.title }}</strong>
+                </div>
+                <div class="panel-body">
+                    {{ form_row(row) }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/app/js/app.js') }}"></script>
+{% endblock %}
+
